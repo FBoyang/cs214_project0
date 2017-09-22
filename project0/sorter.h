@@ -13,7 +13,7 @@ struct record {
 	 */
 	int length;
 	enum type_t *types;
-	void **values;
+	union field *values;
 };
 struct record_node {
 	struct record *data;
@@ -23,6 +23,10 @@ enum type_t {
 	EMPTY;
 	NUMBER;
 	STRING;
+};
+union field {
+	double *number;
+	char *string;
 };
 
 struct csv *read_table();
