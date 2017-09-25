@@ -1,12 +1,14 @@
 #include <stdlib.h>
+#include <string.h>
 #include "sorter.h"
+int compare(struct field *a, struct field *b);
 int sort_by_field(struct csv *table, const char *field_name)
 {
 	int field_index;
 	int *end;
 	int low, middle, high;
 	int i, j;
-	struct field **a, **b;
+	struct field **a, **b, **tmp;
 	int index;
 	int number_of_headers, number_of_records;
 	char **header_strings;
@@ -58,14 +60,14 @@ int sort_by_field(struct csv *table, const char *field_name)
 		while (j < high)
 			b[index++] = a[j++];
 		end[low] = high;
-		if (high == n || end[high] == n) {
+		if (high == number_of_records || end[high] == number_of_records) {
 			/* reset index to 0, then swap a and b */
-			for (; index < n; index++)
+			for (; index < number_of_records; index++)
 				b[index] = a[index];
 			index = 0;
-			a ^= b;
-			b ^= a;
-			a ^= b;
+			tmp = a;
+			a = b;
+			b = tmp;
 		}
 	}
 	if (values != a) {
@@ -73,6 +75,7 @@ int sort_by_field(struct csv *table, const char *field_name)
 	}
 	free(end);
 	free(b);
+	return 0;
 }
 
 int compare(struct field *a, struct field *b) {
@@ -82,7 +85,7 @@ int compare(struct field *a, struct field *b) {
 		else if (a->number > b->number)
 			return 1;
 		else
-			return 0
+			return 0;
 	} else if (a->string == NULL) {
 		if (strlen(b->string) == 0)
 			return 1;
