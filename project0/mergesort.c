@@ -9,7 +9,7 @@ int sort_by_field(struct csv *table, const char *field_name)
 	int low, middle, high;
 	int i, j;
 	struct field **a, **b, **tmp;
-	int index;
+	int ind;
 	int number_of_headers, number_of_records;
 	char **header_strings;
 	struct field **values;
@@ -42,29 +42,29 @@ int sort_by_field(struct csv *table, const char *field_name)
 	/* begin actual mergesort */
 	a = values;
 	b = malloc(number_of_records * sizeof(struct field *));
-	index = 0;
+	ind = 0;
 	while (end[0] != number_of_records) {
-		low = index;
-		middle = end[index];
+		low = ind;
+		middle = end[ind];
 		high = end[middle];
 		i = low;
 		j = middle;
 		while (i < middle && j < high) {
 			if (compare(a[i] + field_index, a[j] + field_index) <= 0)
-				b[index++] = a[i++];
+				b[ind++] = a[i++];
 			else
-				b[index++] = a[j++];
+				b[ind++] = a[j++];
 		}
 		while (i < middle)
-			b[index++] = a[i++];
+			b[ind++] = a[i++];
 		while (j < high)
-			b[index++] = a[j++];
+			b[ind++] = a[j++];
 		end[low] = high;
 		if (high == number_of_records || end[high] == number_of_records) {
-			/* reset index to 0, then swap a and b */
-			for (; index < number_of_records; index++)
-				b[index] = a[index];
-			index = 0;
+			/* reset ind to 0, then swap a and b */
+			for (; ind < number_of_records; ind++)
+				b[ind] = a[ind];
+			ind = 0;
 			tmp = a;
 			a = b;
 			b = tmp;
