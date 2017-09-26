@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "sorter.h"
 int compare(struct record *a, struct record *b);
 void sort_by_field(const char *field_name)
@@ -25,7 +26,7 @@ void sort_by_field(const char *field_name)
 		return;
 	}
 	/* find already sorted regions */
-	end = malloc(row_num * sizeof(int));
+	end = malloc(row_num * sizeof(*end));
 	j = 0;
 	for (i = 0; i < row_num; i++) {
 		if (compare(record_table[i - 1] + field_index, record_table[i] + field_index) > 0) {
@@ -36,7 +37,7 @@ void sort_by_field(const char *field_name)
 	end[j] = row_num;
 	/* begin actual mergesort */
 	a = record_table;
-	b = malloc(row_num * sizeof(struct record *));
+	b = malloc(row_num * sizeof(*b));
 	ind = 0;
 	while (end[0] != row_num) {
 		low = ind;
@@ -72,24 +73,25 @@ void sort_by_field(const char *field_name)
 	free(b);
 }
 
-int compare(struct record *a, struct record *b) {
+int compare(struct record *a, struct record *b)
+{
 	if (a->string == NULL && b->string == NULL) {
-		if (a->digit < b->digit)
-			return -1;
-		else if (a->digit > b->digit)
-			return 1;
-		else
+		if (fabs(a->digit + 1) < 0.0001 && fabs(b->digit + 1) < 0.0001)
 			return 0;
+		else if (fabs(a->digit + 1) < 0.0001)
+			return -1;
+		else if (fabs(b->digit + 1) < 0.0001)
+			return 1;
+		else if (fabs(a->digit - b->digit) < 0.0001)
+			return 0;
+		else if (a->digit < b->digit)
+			return -1;
+		else
+			return 1;
 	} else if (a->string == NULL) {
-		if (b->string[0] == '\0')
-			return 1;
-		else
-			return -1;
+		return -1;
 	} else if (b->string == NULL) {
-		if (a->string[0] == '\0')
-			return -1;
-		else
-			return 1;
+		return 1;
 	} else {
 		return strcmp(a->string, b->string);
 	}

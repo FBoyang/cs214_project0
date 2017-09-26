@@ -1,4 +1,4 @@
-sources = sorter.c csvio.c mergesort.c
+sources = sorter.c mergesort.c
 headers = sorter.h
 objects = $(patsubst %.c, %.o, $(sources))
 
