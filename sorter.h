@@ -8,9 +8,9 @@ struct record{
 
 
 char **feature_name;
-int number_of_features;
+int feature_num;
 struct record **record_table;
-int number_of_rows;
+int row_num;
 void print_table();
 void sort_by_field(const char *field_name);
 #endif /* ifndef _SORTER_H */

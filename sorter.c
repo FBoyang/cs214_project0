@@ -63,9 +63,9 @@ int main(int argc, char** argv){
 
 //	char *name = "movie_metadata.csv";
 //	FILE *file = fopen("movie_metadata.csv", "r");
-	int feature_num;
+	feature_num;
 
-	int row_num = 5000;
+	row_num = 5000;
 
 	//counter( &row_num, &feature_num);
 	FILE *file = stdin;	

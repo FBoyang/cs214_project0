@@ -14,7 +14,7 @@ void sort_by_field(const char *field_name)
 	/* performs a bottom-up mergesort on the table */
 	/* find the column number for comparisons */
 	field_index = -1;
-	for (i = 0; i < number_of_features; i++) {
+	for (i = 0; i < feature_num; i++) {
 		if (strcmp(feature_name[i], field_name) == 0) {
 			field_index = i;
 			break;
@@ -25,20 +25,20 @@ void sort_by_field(const char *field_name)
 		return;
 	}
 	/* find already sorted regions */
-	end = malloc(number_of_rows * sizeof(int));
+	end = malloc(row_num * sizeof(int));
 	j = 0;
-	for (i = 0; i < number_of_rows; i++) {
+	for (i = 0; i < row_num; i++) {
 		if (compare(record_table[i - 1] + field_index, record_table[i] + field_index) > 0) {
 			end[j] = i;
 			j = i;
 		}
 	}
-	end[j] = number_of_rows;
+	end[j] = row_num;
 	/* begin actual mergesort */
 	a = record_table;
-	b = malloc(number_of_rows * sizeof(struct record *));
+	b = malloc(row_num * sizeof(struct record *));
 	ind = 0;
-	while (end[0] != number_of_rows) {
+	while (end[0] != row_num) {
 		low = ind;
 		middle = end[ind];
 		high = end[middle];
@@ -55,9 +55,9 @@ void sort_by_field(const char *field_name)
 		while (j < high)
 			b[ind++] = a[j++];
 		end[low] = high;
-		if (high == number_of_rows || end[high] == number_of_rows) {
+		if (high == row_num || end[high] == row_num) {
 			/* reset ind to 0, then swap a and b */
-			for (; ind < number_of_rows; ind++)
+			for (; ind < row_num; ind++)
 				b[ind] = a[ind];
 			ind = 0;
 			tmp = a;
