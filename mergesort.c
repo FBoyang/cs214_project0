@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
 #include "sorter.h"
 int compare(struct record *a, struct record *b);
 void sort_by_field(const char *field_name)
@@ -113,24 +114,37 @@ void sort_by_field(const char *field_name)
 
 int compare(struct record *a, struct record *b)
 {
+	double ad, bd;
+	bool ab, bb;
+	char *endptr;
 	if (a->string == NULL && b->string == NULL) {
-		if (fabs(a->digit + 1) < 0.0001 && fabs(b->digit + 1) < 0.0001)
-			return 0;
-		else if (fabs(a->digit + 1) < 0.0001)
-			return -1;
-		else if (fabs(b->digit + 1) < 0.0001)
-			return 1;
-		else if (fabs(a->digit - b->digit) < 0.0001)
-			return 0;
-		else if (a->digit < b->digit)
-			return -1;
-		else
-			return 1;
+		return 0;
 	} else if (a->string == NULL) {
 		return -1;
 	} else if (b->string == NULL) {
 		return 1;
 	} else {
-		return strcmp(a->string, b->string);
+		ab = false;
+		bb = false;
+		ad = strtod(a->string, &endptr);
+		if (*endptr == '\0')
+			ab = true;
+		bd = strtod(b->string, &endptr);
+		if (*endptr == '\0')
+			bb = true;
+		if (ab && bb) {
+			if (fabs(ad - bd) < 0.0001)
+				return 0;
+			else if (ad < bd)
+				return -1;
+			else
+				return 1;
+		} else if (ab) {
+			return -1;
+		} else if (bb) {
+			return 1;
+		} else {
+			return strcmp(a->string, b->string);
+		}
 	}
 }
