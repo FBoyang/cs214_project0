@@ -178,8 +178,6 @@ int main(int argc, char** argv){
 				if(p_diff <= 1)
 				{
 		
-					if(strlen(tokens) > 15 || strcmp(ptr, ""))
-					{
 						//treat the data as string
 					
 						if(tokens[0] != '"')
@@ -204,20 +202,7 @@ int main(int argc, char** argv){
 							record_table[column_counter][row_counter].string = malloc(150);
 							strcpy(record_table[column_counter++][row_counter].string, special_tokens+1);
 						}
-					}
-
-					else
-					{
-						//treat the data as digit
-						prev_tokens = tokens;
-						pstr_len = strlen(prev_tokens);
-					//	printf("%d\n", column_counter);
-					//	printf("%d\n", row_counter);
-					//	printf("%s\n", tokens);	
-						record_table[column_counter][row_counter].string = NULL;
-						record_table[column_counter++][row_counter].digit = value;				
-					}
-					tokens = strtok(NULL, ",\r\n");
+							tokens = strtok(NULL, ",\r\n");
 				 
 				}
 				else
@@ -226,7 +211,6 @@ int main(int argc, char** argv){
 					for(i =1; i < p_diff; i++)
 					{
 						record_table[column_counter][row_counter].string = NULL;
-						record_table[column_counter++][row_counter].digit = -1;
 					}
 					
 						
@@ -249,7 +233,6 @@ int main(int argc, char** argv){
 				for (i = 0; i < p_diff; i++)
 				{
 					record_table[column_counter][row_counter].string = NULL;
-					record_table[column_counter++][row_counter].digit = -1;
 				}
 			}
 		column_counter = 0;	
@@ -267,6 +250,8 @@ int main(int argc, char** argv){
 					
 	}
 	
+	printf("row number is %d\n", row_counter);
+	printf("column number is %d\n", feature_num);
 
 /*	free function
  */

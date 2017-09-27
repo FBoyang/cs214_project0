@@ -2,7 +2,6 @@
 #define _SORTER_H
 
 struct record{
-	double digit;
 	char *string;
 };
 
