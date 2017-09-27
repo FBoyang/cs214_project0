@@ -26,20 +26,20 @@ void sort_by_field(const char *field_name)
 		return;
 	}
 	/* find already sorted regions */
-	end = malloc(row_num * sizeof(*end));
+	end = malloc(row_counter * sizeof(*end));
 	j = 0;
-	for (i = 0; i < row_num; i++) {
+	for (i = 0; i < row_counter; i++) {
 		if (compare(record_table[i - 1] + field_index, record_table[i] + field_index) > 0) {
 			end[j] = i;
 			j = i;
 		}
 	}
-	end[j] = row_num;
+	end[j] = row_counter;
 	/* begin actual mergesort */
 	a = record_table;
-	b = malloc(row_num * sizeof(*b));
+	b = malloc(row_counter * sizeof(*b));
 	ind = 0;
-	while (end[0] != row_num) {
+	while (end[0] != row_counter) {
 		low = ind;
 		middle = end[ind];
 		high = end[middle];
@@ -56,9 +56,9 @@ void sort_by_field(const char *field_name)
 		while (j < high)
 			b[ind++] = a[j++];
 		end[low] = high;
-		if (high == row_num || end[high] == row_num) {
+		if (high == row_counter || end[high] == row_counter) {
 			/* reset ind to 0, then swap a and b */
-			for (; ind < row_num; ind++)
+			for (; ind < row_counter; ind++)
 				b[ind] = a[ind];
 			ind = 0;
 			tmp = a;

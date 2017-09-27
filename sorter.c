@@ -76,7 +76,6 @@ int main(int argc, char** argv){
 
 //	char *name = "movie_metadata.csv";
 //	FILE *file = fopen("movie_metadata.csv", "r");
-	int feature_num;
 
 	int row_num = 5000;
 
@@ -115,7 +114,7 @@ int main(int argc, char** argv){
 	matrix_enlarge(row_num, feature_num, record_table);
 	feature_name = malloc(sizeof(char*)*feature_num);
 				
-	int row_counter = 0;
+	row_counter = 0;
 	int column_counter = 0;
 
 	char* tokens = strtok(str, "\r\n,");
@@ -270,6 +269,7 @@ int main(int argc, char** argv){
 
 /*	free function
  */
+	print_table();
 	matrix_free(row_counter, feature_num, record_table);
 	int i;
 	for(i = 0; i < feature_num; i++)
