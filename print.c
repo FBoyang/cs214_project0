@@ -6,12 +6,15 @@ int escaped(char *str);
 void print_table()
 {
 	int i, j;
+	char *str;
+	double num;
 	/* print the sorted csv file */
 	for (i = 0; i < feature_num; i++) {
-		if (escaped(feature_name[i]))
-			fprintf(stdout, "\"%s\"", feature_name[i]);
+		str = feature_name[i];
+		if (escaped(str))
+			fprintf(stdout, "\"%s\"", str);
 		else
-			fputs(feature_name[i], stdout);
+			fputs(str, stdout);
 		if (i == feature_num - 1)
 			break;
 		fputc(',', stdout);
@@ -19,14 +22,24 @@ void print_table()
 	fputs("\r\n", stdout);
 	for (i = 0; i < row_counter; i++) {
 		for (j = 0; j < feature_num; j++) {
-			if (record_table[i][j].string == NULL) {
-				if (fabs(record_table[i][j].digit + 1) >= 0.0001)
-					fprintf(stdout, "%.f", record_table[i][j].digit);
+			str = record_table[j][i].string;
+			num = record_table[j][i].digit;
+			if (str == NULL) {
+				if (fabs(num + 1) >= 0.0001) {
+					if (num - floor(num) < 0.0001)
+						fprintf(stdout, "%.f", num);
+					else if (10 * num - floor(10 * num) < 0.0001)
+						fprintf(stdout, "%.1f", num);
+					else if (100 * num - floor(100 * num) < 0.0001)
+						fprintf(stdout, "%.2f", num);
+					else
+						fprintf(stdout, "%.3f", num);
+				}
 			} else {
-				if (escaped(record_table[i][j].string))
-					fprintf(stdout, "\"%s\"", record_table[i][j].string);
+				if (escaped(str))
+					fprintf(stdout, "\"%s\"", str);
 				else
-					fputs(record_table[i][j].string, stdout);
+					fputs(str, stdout);
 			}
 			if (j == feature_num - 1)
 				break;

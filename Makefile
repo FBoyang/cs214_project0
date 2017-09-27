@@ -5,7 +5,7 @@ objects = $(patsubst %.c, %.o, $(sources))
 all: sorter submission.tar
 
 sorter: $(objects)
-	$(CC) -o sorter $(objects)
+	$(CC) -lm -o sorter $(objects)
 
 $(objects): %.o: %.c $(headers)
 	$(CC) -c $(CPPFLAGS) -Wall -g $(CFLAGS) $<

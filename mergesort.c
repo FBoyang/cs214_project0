@@ -8,9 +8,10 @@ void sort_by_field(const char *field_name)
 {
 	int field_index;
 	int *end;
+	int *pa, *pb, *ptmp;
 	int low, middle, high;
 	int i, j;
-	struct record **a, **b, **tmp;
+	struct record *a, *b, *tmp;
 	int ind;
 	/* performs a bottom-up mergesort on the table */
 	/* find the column number for comparisons */
@@ -27,17 +28,24 @@ void sort_by_field(const char *field_name)
 	}
 	/* find already sorted regions */
 	end = malloc(row_counter * sizeof(*end));
-	j = 0;
+	pa = malloc(row_counter * sizeof(*pa));
+	pb = malloc(row_counter * sizeof(*pb));
 	for (i = 0; i < row_counter; i++) {
-		if (compare(record_table[i - 1] + field_index, record_table[i] + field_index) > 0) {
+		pa[i] = i;
+		pb[i] = i;
+	}
+	j = 0;
+	for (i = 1; i < row_counter; i++) {
+		if (compare(record_table[field_index] + i - 1, record_table[field_index] + i) > 0) {
 			end[j] = i;
 			j = i;
 		}
 	}
 	end[j] = row_counter;
 	/* begin actual mergesort */
-	a = record_table;
+	a = record_table[field_index];
 	b = malloc(row_counter * sizeof(*b));
+	memcpy(b, a, row_counter * sizeof(*a));
 	ind = 0;
 	while (end[0] != row_counter) {
 		low = ind;
@@ -46,15 +54,30 @@ void sort_by_field(const char *field_name)
 		i = low;
 		j = middle;
 		while (i < middle && j < high) {
-			if (compare(a[i] + field_index, a[j] + field_index) <= 0)
-				b[ind++] = a[i++];
-			else
-				b[ind++] = a[j++];
+			if (compare(a + i, a + j) <= 0) {
+				b[ind] = a[i];
+				pb[ind] = pa[i];
+				ind++;
+				i++;
+			} else {
+				b[ind] = a[j];
+				pb[ind] = pa[j];
+				ind++;
+				j++;
+			}
 		}
-		while (i < middle)
-			b[ind++] = a[i++];
-		while (j < high)
-			b[ind++] = a[j++];
+		while (i < middle) {
+			b[ind] = a[i];
+			pb[ind] = pa[i];
+			ind++;
+			i++;
+		}
+		while (j < high) {
+			b[ind] = a[j];
+			pb[ind] = pa[j];
+			ind++;
+			j++;
+		}
 		end[low] = high;
 		if (high == row_counter || end[high] == row_counter) {
 			/* reset ind to 0, then swap a and b */
@@ -62,15 +85,30 @@ void sort_by_field(const char *field_name)
 				b[ind] = a[ind];
 			ind = 0;
 			tmp = a;
+			ptmp = pa;
 			a = b;
+			pa = pb;
 			b = tmp;
+			pb = ptmp;
 		}
 	}
-	if (record_table != a) {
-		record_table = a;
+	if (record_table[field_index] != a) {
+		record_table[field_index] = a;
+	}
+	tmp = malloc(row_counter * sizeof(*tmp));
+	for (i = 0; i < feature_num; i++) {
+		if (i == field_index)
+			continue;
+		for (j = 0; j < row_counter; j++)
+			tmp[pa[j]] = record_table[i][j];
+		for (j = 0; j < row_counter; j++)
+			record_table[i][j] = tmp[j];
 	}
 	free(end);
 	free(b);
+	free(tmp);
+	free(pa);
+	free(pb);
 }
 
 int compare(struct record *a, struct record *b)

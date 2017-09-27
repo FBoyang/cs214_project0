@@ -269,12 +269,16 @@ int main(int argc, char** argv){
 
 /*	free function
  */
+	if (argc >= 3)
+		sort_by_field(argv[2]);
+	else
+		fputs("no parameter provided for sorting, printing original table\n", stderr);
 	print_table();
 	matrix_free(row_counter, feature_num, record_table);
 	int i;
 	for(i = 0; i < feature_num; i++)
 	{
-		free(feature_name[feature_num]);
+		free(feature_name[i]);
 	}
 	free(feature_name);	
 	return 0;
