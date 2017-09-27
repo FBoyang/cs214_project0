@@ -76,7 +76,6 @@ int main(int argc, char** argv){
 
 //	char *name = "movie_metadata.csv";
 //	FILE *file = fopen("movie_metadata.csv", "r");
-	int feature_num;
 
 	int row_num = 5000;
 
@@ -115,7 +114,11 @@ int main(int argc, char** argv){
 	matrix_enlarge(row_num, feature_num, record_table);
 	feature_name = malloc(sizeof(char*)*feature_num);
 				
+<<<<<<< HEAD
 	int row_counter = 0;
+=======
+	row_counter = 0;
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 	int column_counter = 0;
 
 	char* tokens = strtok(str, "\r\n,");
@@ -178,6 +181,11 @@ int main(int argc, char** argv){
 				if(p_diff <= 1)
 				{
 		
+<<<<<<< HEAD
+=======
+					if(strlen(tokens) > 15 || strcmp(ptr, ""))
+					{
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 						//treat the data as string
 					
 						if(tokens[0] != '"')
@@ -202,7 +210,24 @@ int main(int argc, char** argv){
 							record_table[column_counter][row_counter].string = malloc(150);
 							strcpy(record_table[column_counter++][row_counter].string, special_tokens+1);
 						}
+<<<<<<< HEAD
 							tokens = strtok(NULL, ",\r\n");
+=======
+					}
+
+					else
+					{
+						//treat the data as digit
+						prev_tokens = tokens;
+						pstr_len = strlen(prev_tokens);
+					//	printf("%d\n", column_counter);
+					//	printf("%d\n", row_counter);
+					//	printf("%s\n", tokens);	
+						record_table[column_counter][row_counter].string = NULL;
+						record_table[column_counter++][row_counter].digit = value;				
+					}
+					tokens = strtok(NULL, ",\r\n");
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 				 
 				}
 				else
@@ -211,6 +236,10 @@ int main(int argc, char** argv){
 					for(i =1; i < p_diff; i++)
 					{
 						record_table[column_counter][row_counter].string = NULL;
+<<<<<<< HEAD
+=======
+						record_table[column_counter++][row_counter].digit = -1;
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 					}
 					
 						
@@ -233,6 +262,10 @@ int main(int argc, char** argv){
 				for (i = 0; i < p_diff; i++)
 				{
 					record_table[column_counter][row_counter].string = NULL;
+<<<<<<< HEAD
+=======
+					record_table[column_counter++][row_counter].digit = -1;
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 				}
 			}
 		column_counter = 0;	
@@ -250,16 +283,31 @@ int main(int argc, char** argv){
 					
 	}
 	
+<<<<<<< HEAD
 	printf("row number is %d\n", row_counter);
 	printf("column number is %d\n", feature_num);
 
 /*	free function
  */
+=======
+
+/*	free function
+ */
+	if (argc >= 3)
+		sort_by_field(argv[2]);
+	else
+		fputs("no parameter provided for sorting, printing original table\n", stderr);
+	print_table();
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 	matrix_free(row_counter, feature_num, record_table);
 	int i;
 	for(i = 0; i < feature_num; i++)
 	{
+<<<<<<< HEAD
 		free(feature_name[feature_num]);
+=======
+		free(feature_name[i]);
+>>>>>>> 94dfcd8077ce8371db13df33dfcc552ef3126494
 	}
 	free(feature_name);	
 	return 0;

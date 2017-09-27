@@ -1,12 +1,14 @@
-sources = csvio.c mergesort.c
+sources = sorter.c print.c mergesort.c
 headers = sorter.h
 objects = $(patsubst %.c, %.o, $(sources))
 
+all: sorter submission.tar
+
 sorter: $(objects)
-	$(CC) -o sorter $(objects)
+	$(CC) -lm -o sorter $(objects)
 
 $(objects): %.o: %.c $(headers)
-	$(CC) -c $(CPPFLAGS) -Wall -g $(CFLAGS) -o $@ $<
+	$(CC) -c $(CPPFLAGS) -Wall -g $(CFLAGS) $<
 
 submission.tar: $(sources) $(headers)
 	mkdir --parents submission
@@ -15,4 +17,4 @@ submission.tar: $(sources) $(headers)
 
 .PHONY: clean
 clean:
-	rm --recursive --force --verbose sorter $(objects) sumbission.tar submission
+	rm --recursive --force --verbose sorter $(objects) submission.tar submission
