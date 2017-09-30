@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
 #include "sorter.h"
-int compare(struct record *a, struct record *b);
+int compare(struct record a, struct record b);
+int lexcmp(char *a, char *b);
+int strbegin(char *str);
+int strend(char *str);
+int min(int a, int b);
 void sort_by_field(const char *field_name)
 {
 	int field_index;
@@ -37,7 +42,7 @@ void sort_by_field(const char *field_name)
 	}
 	j = 0;
 	for (i = 1; i < row_counter; i++) {
-		if (compare(record_table[field_index] + i - 1, record_table[field_index] + i) > 0) {
+		if (compare(record_table[field_index][i - 1], record_table[field_index][i]) > 0) {
 			end[j] = i;
 			j = i;
 		}
@@ -55,7 +60,7 @@ void sort_by_field(const char *field_name)
 		i = low;
 		j = middle;
 		while (i < middle && j < high) {
-			if (compare(a + i, a + j) <= 0) {
+			if (compare(a[i], a[j]) <= 0) {
 				b[ind] = a[i];
 				pb[ind] = pa[i];
 				ind++;
@@ -112,24 +117,24 @@ void sort_by_field(const char *field_name)
 	free(pb);
 }
 
-int compare(struct record *a, struct record *b)
+int compare(struct record a, struct record b)
 {
 	double ad, bd;
 	bool ab, bb;
 	char *endptr;
-	if (a->string == NULL && b->string == NULL) {
+	if (a.string == NULL && b.string == NULL) {
 		return 0;
-	} else if (a->string == NULL) {
+	} else if (a.string == NULL) {
 		return -1;
-	} else if (b->string == NULL) {
+	} else if (b.string == NULL) {
 		return 1;
 	} else {
 		ab = false;
 		bb = false;
-		ad = strtod(a->string, &endptr);
+		ad = strtod(a.string, &endptr);
 		if (*endptr == '\0')
 			ab = true;
-		bd = strtod(b->string, &endptr);
+		bd = strtod(b.string, &endptr);
 		if (*endptr == '\0')
 			bb = true;
 		if (ab && bb) {
@@ -144,7 +149,68 @@ int compare(struct record *a, struct record *b)
 		} else if (bb) {
 			return 1;
 		} else {
-			return strcmp(a->string, b->string);
+			return lexcmp(a.string, b.string);
 		}
 	}
+}
+
+int lexcmp(char *a, char *b)
+{
+	int ab, bb;
+	int ae, be;
+	int alen, blen;
+	int cmp;
+	ab = strbegin(a);
+	ae = strend(a);
+	bb = strbegin(b);
+	be = strend(b);
+	alen = ae - ab + 1;
+	blen = be - bb + 1;
+	if (alen <= 0 && blen <= 0)
+		return 0;
+	else if (alen <= 0)
+		return -1;
+	else if (blen <= 0)
+		return 1;
+	else if ((cmp = strncasecmp(a + ab, b + bb, min(alen, blen))))
+		return cmp;
+	else if (alen < blen)
+		return -1;
+	else if (alen > blen)
+		return 1;
+	else
+		return 0;
+}
+
+int strbegin(char *str)
+{
+	int i, len, begin;
+	len = strlen(str);
+	begin = len;
+	i = 0;
+	for (i = 0; i < len; i++) {
+		if (!isspace(i)) {
+			begin = i;
+			break;
+		}
+	}
+	return begin;
+}
+
+int strend(char *str)
+{
+	int i, end;
+	end = -1;
+	for (i = strlen(str) - 1; i >= 0; i--) {
+		if (!isspace(str[i])) {
+			end = i;
+			break;
+		}
+	}
+	return end;
+}
+
+int min(int a, int b)
+{
+	return a <= b ? a : b;
 }
