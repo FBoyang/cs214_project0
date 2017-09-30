@@ -78,6 +78,10 @@ int main(int argc, char* argv[]){
 //	char *name = "movie_metadata.csv";
 //	FILE *file = fopen("movie_metadata.csv", "r");
 
+	if (argc < 3) {
+		fputs("please give a field by which to sort\n", stderr);
+		return 0;
+	}
 	 int row_num = 5000;
 	 feature_num = 0;
 	//counter( &row_num, &feature_num);
@@ -291,8 +295,8 @@ int main(int argc, char* argv[]){
 /*	free function
  */
 	//printf(argc[2])
-//	sort_by_field(argv[2], feature_num, feature_name);
-//	print_table();
+	sort_by_field(argv[2]);
+	print_table();
 
 	
 	free(str);

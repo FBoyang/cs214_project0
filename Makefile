@@ -10,9 +10,9 @@ sorter: $(objects)
 $(objects): %.o: %.c $(headers)
 	$(CC) -c $(CPPFLAGS) -Wall -g -O2 $(CFLAGS) $<
 
-submission.tar: $(sources) $(headers)
+submission.tar: $(sources) $(headers) Makefile readme.txt
 	mkdir --parents submission
-	$(foreach file, $(sources) $(headers), cp $(file) submission;)
+	$(foreach file, $(sources) $(headers) Makefile readme.txt, cp $(file) submission;)
 	tar cvf submission.tar submission
 
 .PHONY: clean
