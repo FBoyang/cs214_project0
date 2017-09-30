@@ -4,7 +4,9 @@
 #include <math.h>
 #include <stdbool.h>
 #include "sorter.h"
-int compare(struct record *a, struct record *b);
+int compare(struct record a, struct record b);
+int lexcmp(char *a, char *b);
+charcmp(int a, int b);
 void sort_by_field(const char *field_name)
 {
 	int field_index;
@@ -37,7 +39,7 @@ void sort_by_field(const char *field_name)
 	}
 	j = 0;
 	for (i = 1; i < row_counter; i++) {
-		if (compare(record_table[field_index] + i - 1, record_table[field_index] + i) > 0) {
+		if (compare(record_table[field_index][i - 1], record_table[field_index][i]) > 0) {
 			end[j] = i;
 			j = i;
 		}
@@ -55,7 +57,7 @@ void sort_by_field(const char *field_name)
 		i = low;
 		j = middle;
 		while (i < middle && j < high) {
-			if (compare(a + i, a + j) <= 0) {
+			if (compare(a[i], a[j]) <= 0) {
 				b[ind] = a[i];
 				pb[ind] = pa[i];
 				ind++;
@@ -112,24 +114,24 @@ void sort_by_field(const char *field_name)
 	free(pb);
 }
 
-int compare(struct record *a, struct record *b)
+int compare(struct record a, struct record b)
 {
 	double ad, bd;
 	bool ab, bb;
 	char *endptr;
-	if (a->string == NULL && b->string == NULL) {
+	if (a.string == NULL && b.string == NULL) {
 		return 0;
-	} else if (a->string == NULL) {
+	} else if (a.string == NULL) {
 		return -1;
-	} else if (b->string == NULL) {
+	} else if (b.string == NULL) {
 		return 1;
 	} else {
 		ab = false;
 		bb = false;
-		ad = strtod(a->string, &endptr);
+		ad = strtod(a.string, &endptr);
 		if (*endptr == '\0')
 			ab = true;
-		bd = strtod(b->string, &endptr);
+		bd = strtod(b.string, &endptr);
 		if (*endptr == '\0')
 			bb = true;
 		if (ab && bb) {
@@ -144,7 +146,65 @@ int compare(struct record *a, struct record *b)
 		} else if (bb) {
 			return 1;
 		} else {
-			return strcmp(a->string, b->string);
+			return lexcmp(a.string, b.string);
 		}
+	}
+}
+
+int lexcmp(char *a, char *b)
+{
+	int i, j;
+	int ae, be;
+	int ac, bc;
+	int cmp;
+	i = strbegin(a);
+	ae = strend(a);
+	j = strbegin(b);
+	be = strend(b);
+	for (; i < ae && j < be; i++, j++) {
+		if ((cmp = charcmp(a[i], b[j])))
+			return cmp;
+	}
+	if (i < ae)
+		return -1;
+	else if (j < be)
+		return 1;
+	else
+		return 0;
+}
+
+int charcmp(int a, int b)
+{
+	if (isalpha(a) && isalpha(b)) {
+		if (toupper(a) == toupper(b)) {
+			if (isupper(a) && isupper(b))
+				return 0;
+			else if (isupper(a))
+				return -1;
+			else if (isupper(b))
+				return 1;
+			else
+				return 0;
+		} else if (toupper(a) < toupper(b)) {
+			return -1;
+		} else {
+			return 1;
+		}
+	} else if (isalpha(a)) {
+		if (toupper(a) < b)
+			return -1;
+		else
+			return 1;
+	} else if (isalpha(b)) {
+		if (a < toupper(b))
+			return -1;
+		else
+			return 1;
+	} else if (a == b) {
+		return 0;
+	} else if (a < b) {
+		return -1;
+	} else {
+		return 1;
 	}
 }
