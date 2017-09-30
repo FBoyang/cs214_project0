@@ -5,10 +5,10 @@ objects = $(patsubst %.c, %.o, $(sources))
 all: sorter submission.tar
 
 sorter: $(objects)
-	$(CC) -lm -o sorter $(objects)
+	$(CC) -lm $(LDFLAGS) -o sorter $(objects)
 
 $(objects): %.o: %.c $(headers)
-	$(CC) -c $(CPPFLAGS) -Wall -g $(CFLAGS) $<
+	$(CC) -c $(CPPFLAGS) -Wall -g -O2 $(CFLAGS) $<
 
 submission.tar: $(sources) $(headers)
 	mkdir --parents submission
