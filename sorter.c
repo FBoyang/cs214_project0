@@ -3,7 +3,6 @@
 #include<string.h>
 #include<ctype.h>
 #include"sorter.h"
-
 void column_count(char *str, int *column){
 	//FILE *file = fopen(file_name, "r");
 	*column = 0;
@@ -74,14 +73,13 @@ void matrix_enlarge(int row, int column, struct record **matrix){
 
 
 
-int main(int argc, char** argv){
+int main(int argc, char* argv[]){
 
 //	char *name = "movie_metadata.csv";
 //	FILE *file = fopen("movie_metadata.csv", "r");
-	int feature_num;
 
-	int row_num = 5000;
-
+	 int row_num = 5000;
+	 feature_num = 0;
 	//counter( &row_num, &feature_num);
 	FILE *file = stdin;
 	int ini_size = 1024;	
@@ -118,51 +116,86 @@ int main(int argc, char** argv){
 	matrix_enlarge(row_num, feature_num, record_table);
 	feature_name = malloc(sizeof(char*)*feature_num);
 				
-	int row_counter = 0;
+	row_counter = 0;
 	int column_counter = 0;
 
 	char* tokens = strtok(str, "\r\n,");
 	
 	char* prev_tokens;
+	
+	int str_len = strlen(str) - 2;
+	
+	int pstr_len = 0;
+	column_counter = 0;
+	prev_tokens = str;
+	
 
 	while(tokens)
 	{	
 		//record_table[column_counter] = malloc(sizeof(struct record)*(row_num+1));
+		if(prev_tokens[0] == ',')
+		{
+			pstr_len = -1;
+		}
 
-		if(tokens[0] != '"')
-		{	
+		int p_diff = tokens - (prev_tokens + pstr_len);
+		if(p_diff <= 1)
+		{
+			if(tokens[0] != '"')
+			{	
+				prev_tokens = tokens;		
+				feature_name[column_counter] = malloc(sizeof(char)*(strlen(tokens) + 1));
+				strcpy(feature_name[column_counter++], tokens);
+				pstr_len = strlen(prev_tokens);
+	
+		 	}
+
+			else
+			{
+				//embeded comma
+				prev_tokens = tokens;
+				char special_tokens[200];
+				strcpy(special_tokens, tokens);
+				tokens = strtok(NULL, "\"");
+				strcat(special_tokens, tokens);
+				pstr_len = strlen(special_tokens) + 2;
+				feature_name[column_counter] = malloc(sizeof(char)*(strlen(tokens) + 1));
+				strcpy(feature_name[column_counter++], special_tokens+1);
+			}
+				
+				tokens = strtok(NULL, ",\r\n");
 			
-			feature_name[column_counter] = malloc(sizeof(char)*(strlen(tokens) + 1));
-			strcpy(feature_name[column_counter++], tokens);
-			tokens = strtok(NULL, ",\r\n");
-	 	}
+		}
 
 		else
 		{
-			//embeded comma
-			char special_tokens[200];
-			strcpy(special_tokens, tokens);
-			tokens = strtok(NULL, "\"");
-			strcat(special_tokens, tokens);
-			feature_name[column_counter] = malloc(sizeof(char)*(strlen(tokens) + 1));
-			strcpy(feature_name[column_counter++], special_tokens+1);
-			tokens = strtok(NULL, ",\r\n");
+		//contain empty cell
+			fprintf(stderr, "no field name in column %d\n", column_counter);
 		}
-		
-			
 	}
+		
 	/*
  * 	this part serves to read the record and store them into the record struct
  */
+	ini_size = 1024;
 	while(fgets(str, ini_size, file))
 	{
-		
+			char *comp = malloc(ini_size);
+			while(str[strlen(str)-1] != '\n')
+			{
+				ini_size = ini_size + 1024;
+				str = realloc(str, ini_size);
+				fgets(comp, ini_size, file);
+				strcat(str, comp);
+			}
+			free(comp);	
+	
 		//printf("%s\n", tokens);
-		int str_len = strlen(str) - 2;//exclude the \n
-		int pstr_len = 0;
-		column_counter = 0;		
-		tokens = strtok(str, ",\r\n");
-		prev_tokens = str;
+			str_len = strlen(str) - 2;//exclude the \n
+			int pstr_len = 0;
+			column_counter = 0;		
+			tokens = strtok(str, ",\r\n");
+			prev_tokens = str;
 
 			
 			while(tokens)
@@ -226,6 +259,7 @@ int main(int argc, char** argv){
 			/*
  * 			check whether the last few cell are empty
  */
+			
 			int p_diff = str + str_len  - (strlen(prev_tokens) + prev_tokens);
 			if(p_diff > 0)
 			{
@@ -251,11 +285,15 @@ int main(int argc, char** argv){
 	}
 	
 
-	printf("row number is %d\n", row_counter);
-	printf("column number is %d\n", feature_num);
+	//printf("row number is %d\n", row_counter);
+	//printf("column number is %d\n", feature_num);
 
 /*	free function
  */
+	//printf(argc[2])
+//	sort_by_field(argv[2], feature_num, feature_name);
+//	print_table();
+
 	
 	free(str);
 	str = NULL;
