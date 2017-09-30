@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
 #include "sorter.h"
 int compare(struct record a, struct record b);
 int lexcmp(char *a, char *b);
-charcmp(int a, int b);
+int strbegin(char *str);
+int strend(char *str);
+int min(int a, int b);
 void sort_by_field(const char *field_name)
 {
 	int field_index;
@@ -153,58 +156,61 @@ int compare(struct record a, struct record b)
 
 int lexcmp(char *a, char *b)
 {
-	int i, j;
+	int ab, bb;
 	int ae, be;
-	int ac, bc;
+	int alen, blen;
 	int cmp;
-	i = strbegin(a);
+	ab = strbegin(a);
 	ae = strend(a);
-	j = strbegin(b);
+	bb = strbegin(b);
 	be = strend(b);
-	for (; i < ae && j < be; i++, j++) {
-		if ((cmp = charcmp(a[i], b[j])))
-			return cmp;
-	}
-	if (i < ae)
+	alen = ae - ab + 1;
+	blen = be - bb + 1;
+	if (alen <= 0 && blen <= 0)
+		return 0;
+	else if (alen <= 0)
 		return -1;
-	else if (j < be)
+	else if (blen <= 0)
+		return 1;
+	else if ((cmp = strncasecmp(a + ab, b + bb, min(alen, blen))))
+		return cmp;
+	else if (alen < blen)
+		return -1;
+	else if (alen > blen)
 		return 1;
 	else
 		return 0;
 }
 
-int charcmp(int a, int b)
+int strbegin(char *str)
 {
-	if (isalpha(a) && isalpha(b)) {
-		if (toupper(a) == toupper(b)) {
-			if (isupper(a) && isupper(b))
-				return 0;
-			else if (isupper(a))
-				return -1;
-			else if (isupper(b))
-				return 1;
-			else
-				return 0;
-		} else if (toupper(a) < toupper(b)) {
-			return -1;
-		} else {
-			return 1;
+	int i, len, begin;
+	len = strlen(str);
+	begin = len;
+	i = 0;
+	for (i = 0; i < len; i++) {
+		if (!isspace(i)) {
+			begin = i;
+			break;
 		}
-	} else if (isalpha(a)) {
-		if (toupper(a) < b)
-			return -1;
-		else
-			return 1;
-	} else if (isalpha(b)) {
-		if (a < toupper(b))
-			return -1;
-		else
-			return 1;
-	} else if (a == b) {
-		return 0;
-	} else if (a < b) {
-		return -1;
-	} else {
-		return 1;
 	}
+	return begin;
+}
+
+int strend(char *str)
+{
+	int i, end;
+	end = -1;
+	for (i = strlen(str) - 1; i >= 0; i--) {
+		if (!isspace(str[i])) {
+			end = i;
+			break;
+		}
+	}
+	return end;
+}
+
+int min(int a, int b)
+{
+	return a <= b ? a : b;
 }
