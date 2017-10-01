@@ -87,17 +87,9 @@ int main(int argc, char* argv[]){
 	//counter( &row_num, &feature_num);
 	FILE *file = stdin;
 	int ini_size = 1024;	
-	char *str = malloc(ini_size);
-	char *comp = malloc(ini_size);
-	fgets(str, ini_size, file);
-	while(str[strlen(str)-1] != '\n')
-	{
-		ini_size = ini_size + 1024;
-		str = realloc(str, ini_size);
-		fgets(comp, ini_size, file);
-		strcat(str, comp);
-	}
-	free(comp);	
+	char *str = NULL;
+	size_t n = 0;
+	getline(&str, &n, file);
 
 
 
@@ -182,17 +174,8 @@ int main(int argc, char* argv[]){
  * 	this part serves to read the record and store them into the record struct
  */
 	ini_size = 1024;
-	while(fgets(str, ini_size, file))
+	while(getline(&str, &n, file) != -1)
 	{
-			char *comp = malloc(ini_size);
-			while(str[strlen(str)-1] != '\n')
-			{
-				ini_size = ini_size + 1024;
-				str = realloc(str, ini_size);
-				fgets(comp, ini_size, file);
-				strcat(str, comp);
-			}
-			free(comp);	
 	
 		//printf("%s\n", tokens);
 			str_len = strlen(str) - 2;//exclude the \n
