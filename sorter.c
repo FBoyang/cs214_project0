@@ -3,6 +3,8 @@
 #include<string.h>
 #include<ctype.h>
 #include"sorter.h"
+#include"mergesort.c"
+#include"print.c"
 void column_count(char *str, int *column){
 	//FILE *file = fopen(file_name, "r");
 	*column = 0;
@@ -204,7 +206,7 @@ int main(int argc, char* argv[]){
 						{
 							prev_tokens = tokens;
 							pstr_len = strlen(prev_tokens);
-							record_table[column_counter][row_counter].string = malloc(150);
+							record_table[column_counter][row_counter].string = malloc(strlen(tokens)+2);
 							strcpy(record_table[column_counter++][row_counter].string, tokens);
 						}
 						else
@@ -219,7 +221,7 @@ int main(int argc, char* argv[]){
 							strcat(special_tokens, tokens);
 							pstr_len = strlen(special_tokens) + 2; // one comma and one quotation mark miss
 							//need to be optimized
-							record_table[column_counter][row_counter].string = malloc(150);
+							record_table[column_counter][row_counter].string = malloc(strlen(special_tokens)+2);
 							strcpy(record_table[column_counter++][row_counter].string, special_tokens+1);
 						}
 							tokens = strtok(NULL, ",\r\n");
