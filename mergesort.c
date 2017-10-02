@@ -132,10 +132,10 @@ int compare(struct record a, struct record b)
 		ab = false;
 		bb = false;
 		ad = strtod(a.string + strbegin(a.string), &endptr);
-		if (endptr == a.string + strend(a.string))
+		if (endptr == a.string + strend(a.string) + 1)
 			ab = true;
 		bd = strtod(b.string + strbegin(b.string), &endptr);
-		if (endptr == b.string + strend(b.string))
+		if (endptr == b.string + strend(b.string) + 1)
 			bb = true;
 		if (ab && bb) {
 			if (fabs(ad - bd) < 0.0001)

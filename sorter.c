@@ -3,8 +3,6 @@
 #include<string.h>
 #include<ctype.h>
 #include"sorter.h"
-#include"mergesort.c"
-#include"print.c"
 void column_count(char *str, int *column){
 	//FILE *file = fopen(file_name, "r");
 	*column = 0;
