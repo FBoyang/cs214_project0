@@ -131,11 +131,11 @@ int compare(struct record a, struct record b)
 	} else {
 		ab = false;
 		bb = false;
-		ad = strtod(a.string, &endptr);
-		if (*endptr == '\0')
+		ad = strtod(a.string + strbegin(a.string), &endptr);
+		if (endptr == a.string + strend(a.string))
 			ab = true;
-		bd = strtod(b.string, &endptr);
-		if (*endptr == '\0')
+		bd = strtod(b.string + strbegin(b.string), &endptr);
+		if (endptr == b.string + strend(b.string))
 			bb = true;
 		if (ab && bb) {
 			if (fabs(ad - bd) < 0.0001)
@@ -189,7 +189,7 @@ int strbegin(char *str)
 	begin = len;
 	i = 0;
 	for (i = 0; i < len; i++) {
-		if (!isspace(i)) {
+		if (str[i] > '\0' && !isspace(str[i])) {
 			begin = i;
 			break;
 		}
@@ -202,7 +202,7 @@ int strend(char *str)
 	int i, end;
 	end = -1;
 	for (i = strlen(str) - 1; i >= 0; i--) {
-		if (!isspace(str[i])) {
+		if (str[i] > '\0' && !isspace(str[i])) {
 			end = i;
 			break;
 		}
