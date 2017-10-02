@@ -6,7 +6,8 @@
 #include <stdbool.h>
 #include "sorter.h"
 int compare(struct record a, struct record b);
-int lexcmp(char *a, char *b);
+int lexcmp(char *a, int alen, char *b, int blen);
+int charcmp(char a, char b);
 int strbegin(char *str);
 int strend(char *str);
 int min(int a, int b);
@@ -101,12 +102,13 @@ void sort_by_field(const char *field_name)
 	if (record_table[field_index] != a) {
 		record_table[field_index] = a;
 	}
+	/* replicate changes to sorted column in all other columns */
 	tmp = malloc(row_counter * sizeof(*tmp));
 	for (i = 0; i < feature_num; i++) {
 		if (i == field_index)
 			continue;
 		for (j = 0; j < row_counter; j++)
-			tmp[pa[j]] = record_table[i][j];
+			tmp[j] = record_table[i][pa[j]];
 		for (j = 0; j < row_counter; j++)
 			record_table[i][j] = tmp[j];
 	}
@@ -120,66 +122,98 @@ void sort_by_field(const char *field_name)
 int compare(struct record a, struct record b)
 {
 	double ad, bd;
-	bool ab, bb;
+	bool ac, bc;
+	int ab, bb;
+	int ae, be;
+	bool aempty, bempty;
 	char *endptr;
-	if (a.string == NULL && b.string == NULL) {
+	ab = strbegin(a.string);
+	ae = strend(a.string);
+	bb = strbegin(b.string);
+	be = strend(b.string);
+	aempty = (ae < ab);
+	bempty = (be < bb);
+	if (aempty && bempty) {
 		return 0;
-	} else if (a.string == NULL) {
+	} else if (aempty) {
 		return -1;
-	} else if (b.string == NULL) {
+	} else if (bempty) {
 		return 1;
 	} else {
-		ab = false;
-		bb = false;
-		ad = strtod(a.string + strbegin(a.string), &endptr);
-		if (endptr == a.string + strend(a.string) + 1)
-			ab = true;
-		bd = strtod(b.string + strbegin(b.string), &endptr);
-		if (endptr == b.string + strend(b.string) + 1)
-			bb = true;
-		if (ab && bb) {
+		ac = false;
+		bc = false;
+		ad = strtod(a.string + ab, &endptr);
+		if (endptr == a.string + ae + 1)
+			ac = true;
+		bd = strtod(b.string + bb, &endptr);
+		if (endptr == b.string + be + 1)
+			bc = true;
+		if (ac && bc) {
 			if (fabs(ad - bd) < 0.0001)
 				return 0;
 			else if (ad < bd)
 				return -1;
 			else
 				return 1;
-		} else if (ab) {
+		} else if (ac) {
 			return -1;
-		} else if (bb) {
+		} else if (bc) {
 			return 1;
 		} else {
-			return lexcmp(a.string, b.string);
+			return lexcmp(a.string + ab, ae - ab + 1, b.string+ bb, be - bb + 1);
 		}
 	}
 }
 
-int lexcmp(char *a, char *b)
+int lexcmp(char *a, int alen, char *b, int blen)
 {
-	int ab, bb;
-	int ae, be;
-	int alen, blen;
+	int i, j;
 	int cmp;
-	ab = strbegin(a);
-	ae = strend(a);
-	bb = strbegin(b);
-	be = strend(b);
-	alen = ae - ab + 1;
-	blen = be - bb + 1;
-	if (alen <= 0 && blen <= 0)
+	i = 0;
+	j = 0;
+	while (i < alen && j < blen) {
+		while (a[i] < '\0' || isspace(a[i]))
+			i++;
+		while (b[j] < '\0' || isspace(b[j]))
+			j++;
+		if (i == alen && j == blen)
+			return 0;
+		else if (i == alen)
+			return -1;
+		else if (j == blen)
+			return 1;
+		else if ((cmp = charcmp(a[i], b[j])))
+			return cmp;
+		i++;
+		j++;
+	}
+	return 0;
+}
+
+int charcmp(char a, char b)
+{
+	if (isalpha(a) && isalpha(b)) {
+		if (toupper(a) == toupper(b)) {
+			if (isupper(a) && isupper(b))
+				return 0;
+			else if (isupper(a))
+				return -1;
+			else if (isupper(b))
+				return 1;
+			else
+				return 0;
+		} else if (toupper(a) < toupper(b)) {
+			return -1;
+		} else {
+			return 1;
+		}
+	} else if (toupper(a) == toupper(b)) {
 		return 0;
-	else if (alen <= 0)
+	} else if (toupper(a) < toupper(b)) {
 		return -1;
-	else if (blen <= 0)
+	} else {
 		return 1;
-	else if ((cmp = strncasecmp(a + ab, b + bb, min(alen, blen))))
-		return cmp;
-	else if (alen < blen)
-		return -1;
-	else if (alen > blen)
-		return 1;
-	else
-		return 0;
+	}
 }
 
 int strbegin(char *str)
