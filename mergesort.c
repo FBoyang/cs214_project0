@@ -125,14 +125,17 @@ int compare(struct record a, struct record b)
 	bool ac, bc;
 	int ab, bb;
 	int ae, be;
+	int alen, blen;
 	bool aempty, bempty;
 	char *endptr;
 	ab = strbegin(a.string);
 	ae = strend(a.string);
 	bb = strbegin(b.string);
 	be = strend(b.string);
-	aempty = (ae < ab);
-	bempty = (be < bb);
+	alen = ae - ab + 1;
+	blen = be - bb + 1;
+	aempty = (alen <= 0);
+	bempty = (blen <= 0);
 	if (aempty && bempty) {
 		return 0;
 	} else if (aempty) {
@@ -160,7 +163,7 @@ int compare(struct record a, struct record b)
 		} else if (bc) {
 			return 1;
 		} else {
-			return lexcmp(a.string + ab, ae - ab + 1, b.string+ bb, be - bb + 1);
+			return lexcmp(a.string + ab, alen, b.string+ bb, blen);
 		}
 	}
 }

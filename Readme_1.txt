@@ -14,3 +14,31 @@ For storing part, since getline malloc enough space for me, so I don't need to c
 For each string space, I also malloc a length which is just enough to store such string. 
 
 Therefore, the structure we designed is flexible to fit the general data.
+
+We perform mergesort by first recording the boundaries of the already sorted
+regions, then merging them until they are combined into a single region.
+Since the matrix is allocated, by a design decision, in column major order,
+we must record the permutation of the input and replicate the rearrangement
+in all other columns.
+
+We compare strings by first grouping all characters into two categories:
+non-whitespace ASCII characters, and all other characters.
+We will treat these characters as unreadable and
+we will therefore consider them "whitespace",
+even though not all of those characters are actually whitespace.
+We then strip all leading and trailing whitespace.
+If we can convert the entire remaining string to a number,
+then we will treat that field as a number.
+Otherwise, we will treat it as a string.
+
+When we compare two fields, if both are empty, then they are equal.
+If one is empty, it comes before the other in our ordering.
+If both are numbers, we compare their numerical values.
+If one is numeric, it comes before the non-numeric value.
+Otherwise, both fields are strings.
+
+We compare strings in the following way:
+first we remove all whitespace characters,
+then we compare lexicographically character by character.
+If the characters are the same in case insensitive comparison,
+then we use the ASCII code as a tiebreaker.
